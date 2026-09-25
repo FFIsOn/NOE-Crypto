@@ -1,5 +1,5 @@
 <!DOCTYPE html><html><head><meta charset="UTF-8"><title>NOE-256 Engine</title><style>
-body{background:#040814;color:#0fcc;font-family:monospace;padding:10px;margin:0;box-sizing:border-box;}
+body{background:#040814;color:#00ffcc;font-family:monospace;padding:10px;margin:0;box-sizing:border-box;}
 .c{max-width:1300px;margin:0 auto;}
 .p{background:linear-gradient(135deg, #0d1527, #070a14);border:1px solid #00ffcc;padding:12px;margin-bottom:10px;border-radius:4px;box-shadow:0 0 15px rgba(0,255,204,0.05);}
 .g{display:grid;grid-template-columns:1fr 1fr;gap:15px;}
@@ -8,18 +8,18 @@ button{background:#00ffcc;color:#000;border:none;padding:8px 15px;font-weight:bo
 button:hover{background:#00ccaa;box-shadow:0 0 10px rgba(0,255,204,0.3);}
 input{background:#000;color:#0fc;border:1px solid #0fc;padding:6px;font-family:inherit;}
 canvas{background:#02040a;border:1px solid #00ffcc;width:100%;height:180px;border-radius:4px;}
-.threed-box{background:#000;border:1px solid #00ffcc;height:180px;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;}
-.token3d{width:90px;height:90px;border-radius:50%;background:radial-gradient(circle, #00ffcc 10%, #040814 80%);box-shadow:0 0 30px #00ffcc, inset 0 0 15px #fff;animation:spin3d 3s linear infinite;display:flex;align-items:center;justify-content:center;font-weight:bold;color:#000;font-size:22px;border:3px double #fff;perspective:1000px;}
-@keyframes spin3d{0%{transform:rotateY(0deg) rotateX(10deg);}100%{transform:rotateY(360deg) rotateX(10deg);}}
+.threed-box{background:#000;border:1px solid #00ffcc;height:180px;border-radius:4px;position:relative;overflow:hidden;}
 .svg-box{background:#000;border:1px solid #00ffcc;height:180px;display:flex;align-items:center;justify-content:center;}
-</style></head><body><div class="c">
-<h2>💎 NOE-256 Invulnerability Engine & VAT Asset Matrix</h2>
+</style>
+<script src="https://cloudflare.com"></script>
+</head><body><div class="c">
+<h2>💎 NOE-256 Invulnerability Engine & PBR Asset Matrix</h2>
 <div class="g">
  <div class="p">
   <h3>📊 Active Cache Registers</h3>
   <div>Block: <b id="b">1</b> | Buffer: <b id="c">0</b>/100k</div>
   <div style="margin:5px 0;">Register: <b id="r" style="color:#3b82f6;">00000000</b></div>
-  <button onclick="tx()">Run 4-Bit Slide & Spin</button>
+  <button onclick="tx()">Run 4-Bit Slide & Reflect</button>
   <button onclick="fuzz()">Fuzz Oblivion Port</button>
   <button onclick="bulk(25000)">Bulk Stress 25k</button>
  </div>
@@ -35,10 +35,8 @@ canvas{background:#02040a;border:1px solid #00ffcc;width:100%;height:180px;borde
   <canvas id="cv"></canvas>
  </div>
  <div class="p">
-  <h3>🎬 AAA Studio Quality VAT Token Loop</h3>
-  <div class="threed-box" id="tokenBox">
-    <div class="token3d" id="noeCoin">NOE</div>
-  </div>
+  <h3>🎬 Studio Quality PBR Chrome Token</h3>
+  <div id="webglContainer" class="threed-box"></div>
  </div>
 </div>
 <div class="g">
@@ -52,9 +50,58 @@ canvas{background:#02040a;border:1px solid #00ffcc;width:100%;height:180px;borde
 <script>
 let reg=0x4A7F2B1C,key=0xDEADC0DE,txs=0,blk=1,arc=new Map(),points=[];
 const maskedHardwareId = "HW_PUF_NODE_" + Math.floor(Math.random()*0xFFFF).toString(16).toUpperCase();
+
+// --- 2D CANVAS GRAPHICS ENGINE CONTROL ---
 const canvas=document.getElementById('cv'),ctx=canvas.getContext('2d');
 const resize=()=>{canvas.width=canvas.clientWidth;canvas.height=canvas.clientHeight;draw();};
 window.addEventListener('resize',resize);
+
+// --- STUDIO QUALITY WebGL THREE.JS CONTAINER INIT ---
+const container = document.getElementById('webglContainer');
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(45, container.clientWidth / 180, 0.1, 100);
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(container.clientWidth, 180);
+renderer.setPixelRatio(window.devicePixelRatio);
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+container.appendChild(renderer.domElement);
+
+// Build Physically Based Rendering (PBR) Chrome Material
+const geometry = new THREE.SphereGeometry(1.4, 64, 64);
+const pbrMaterial = new THREE.MeshStandardMaterial({
+    color: 0xffffff,
+    metalness: 1.0,     // 100% Pure Mirror Metallic Surface
+    roughness: 0.15,    // Micro-surface roughness for authentic soft light scattering
+    envMapIntensity: 1.5
+});
+const tokenSphere = new THREE.Mesh(geometry, pbrMaterial);
+scene.add(tokenSphere);
+camera.position.z = 4.5;
+
+// Generate High-Fidelity Studio Lighting Rig
+const ambientLight = new THREE.AmbientLight(0x0a101d, 0.5);
+scene.add(ambientLight);
+
+const keyLight = new THREE.DirectionalLight(0xffffff, 2.0);
+keyLight.position.set(5, 5, 4);
+scene.add(keyLight);
+
+const rimLight = new THREE.DirectionalLight(0x3b82f6, 1.5); // Azure rim glow reflection
+rimLight.position.set(-5, -3, -2);
+scene.add(rimLight);
+
+// Generate procedural envmap fallback for instant loading reflections
+const pmremGenerator = new THREE.PMREMGenerator(renderer);
+scene.environment = pmremGenerator.fromScene(new THREE.Scene()).texture;
+
+// WebGL Animation Render Loop
+function animateToken() {
+    requestAnimationFrame(animateToken);
+    tokenSphere.rotation.y += 0.008; // Smooth spatial horizontal loop
+    tokenSphere.rotation.x = 0.2;     // Match the fixed pitch angle of your reference image
+    renderer.render(scene, camera);
+}
+animateToken();
 
 const up=()=>{
  document.getElementById('b').innerText=blk;
@@ -95,7 +142,7 @@ function draw(){
 }
 
 function generateSvgMap(seedVal) {
- let points = [];
+ let pts = [];
  let currentX = 90, currentY = 90;
  let seed = seedVal;
  for (let i = 0; i < 8; i++) {
@@ -108,22 +155,19 @@ function generateSvgMap(seedVal) {
   else currentX -= len;
   currentX = Math.max(10, Math.min(170, currentX));
   currentY = Math.max(10, Math.min(170, currentY));
-  points.push([currentX, currentY]);
+  pts.push([currentX, currentY]);
  }
- let pathD = `M 90 90 ` + points.map(p => `L ${p[0]} ${p[1]}`).join(' ');
+ let pathD = `M 90 90 ` + pts.map(p => `L ${p} ${p}`).join(' ');
  return `<svg width="100%" height="100%" viewBox="0 0 180 180" xmlns="http://w3.org">
   <path d="${pathD}" fill="none" stroke="#00ffcc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
   <circle cx="90" cy="90" r="4" fill="#3b82f6"/>
-  <circle cx="${points[points.length-1]/[0]}" cy="${points[points.length-1]/[1]}" r="4" fill="#f59e0b"/>
+  <circle cx="${pts[pts.length-1][0]}" cy="${pts[pts.length-1][1]}" r="4" fill="#f59e0b"/>
  </svg>`;
 }
 
-function triggerTokenFlash(color) {
-    const coin = document.getElementById('noeCoin');
-    coin.style.boxShadow = `0 0 60px ${color}, inset 0 0 25px ${color}`;
-    setTimeout(() => {
-        coin.style.boxShadow = `0 0 30px #00ffcc, inset 0 0 15px #fff`;
-    }, 300);
+function flashPbrMaterial(colorHex) {
+    pbrMaterial.color.setHex(colorHex);
+    setTimeout(() => { pbrMaterial.color.setHex(0xffffff); }, 250);
 }
 
 function tx(){
@@ -136,11 +180,11 @@ function tx(){
  let serverNonceToken = Math.floor(Math.random() * 0xFFFF);
  let compiledHandshakeHash = (Math.floor(jitterDelta) ^ key ^ serverNonceToken) & 0xFFFFFFFF;
  
- triggerTokenFlash('#00ffcc');
+ flashPbrMaterial(0x00ffcc); // Flash clean neon-green on active transaction slide
  document.getElementById('svgContainer').innerHTML = generateSvgMap(compiledHandshakeHash);
  points.push(jitterDelta / 15); if (points.length > 50) points.shift();
  
- out(`⚡ [VAT Loop Pass] Handshake Complete. ID: <span style="color:#3b82f6;">${maskedHardwareId}</span>`);
+ out(`⚡ [PBR Slide Pass] Handshake Complete. ID: <span style="color:#3b82f6;">${maskedHardwareId}</span>`);
  
  if (txs >= 100000) {
   let sd = "SEED_BLK_" + blk + "_" + Math.floor(Math.random() * 0xFFFFFFFF).toString(16).toUpperCase();
@@ -151,7 +195,7 @@ function tx(){
 }
 
 function fuzz(){
- triggerTokenFlash('#f43f5e');
+ flashPbrMaterial(0xf43f5e); // Flash hostile red reflection on intercept alert
  out(`<span style="color:#f43f5e;">⚠️ [Buffer Intercept] Discarding unmapped anomalies to Secondary Oblivion Port...</span>`);
  let ob = new Uint8Array(16); crypto.getRandomValues(ob); ob.fill(0);
  out(`🧹 [Oblivion Collapse] Register tracks pristine.`);
@@ -159,7 +203,7 @@ function fuzz(){
 }
 
 function bulk(n){
- triggerTokenFlash('#3b82f6');
+ flashPbrMaterial(0x3b82f6); // Flash high-speed blue on bulk crunch loads
  out(`🚀 Streaming ${n.toLocaleString()} data-flows across L-Cache lanes...`);
  setTimeout(() => {
   for (let i = 0; i < n; i++) {
